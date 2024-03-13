@@ -1,8 +1,6 @@
 import os
 from flask import Flask, render_template, request
-import numpy as np
-import matplotlib.pyplot as plt
-import cv2
+
 app = Flask(__name__)
 
 UPLOAD_FOLDER = 'uploads'
@@ -13,6 +11,7 @@ if not os.path.exists(UPLOAD_FOLDER):
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in {'jpg', 'jpeg', 'png'}
+
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
@@ -30,13 +29,14 @@ def index():
             if file and allowed_file(file.filename):
                 filename = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
                 file.save(filename)
-                print(filename)
 
         return render_template('index.html', success='Files uploaded successfully')
 
     return render_template('index.html')
 
+
+
 if __name__ == '__main__':
     app.run(debug=True)
 
-    
+
