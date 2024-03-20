@@ -72,9 +72,27 @@ def uploadImages():
     
 
 
+def my_function():
+    return "Function called successfully!"
+
+
+
+
+@app.route('/button_click', methods=['POST'])
+def button_click():
+    if request.method == 'POST':
+        stritchImages()
+        cannyEdgeDetection()
+        result = my_function()
+        return result
+
+
+
+
+
+
 def index():
     uploadImages()
-    stritchImages()
     return render_template('index.html')
 
 
