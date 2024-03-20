@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, send_from_directory
 import numpy as np
 import matplotlib.pyplot as plt
 import cv2
@@ -37,7 +37,6 @@ def stritchImages():
             count+=1
         else:
             print("Stitching failed!")
-    print(count)
 
 
 
@@ -72,10 +71,6 @@ def uploadImages():
     
 
 
-def my_function():
-    return "Function called successfully!"
-
-
 
 
 @app.route('/button_click', methods=['POST'])
@@ -83,8 +78,15 @@ def button_click():
     if request.method == 'POST':
         stritchImages()
         cannyEdgeDetection()
-        result = my_function()
-        return result
+        return render_template('index.html', success='Files uploaded successfully')
+
+
+@app.route('/stritch', methods=['POST'])
+def stritch():
+    if request.method == 'POST':
+        return render_template('stritch.html', success='Files uploaded successfully')
+
+
 
 
 
