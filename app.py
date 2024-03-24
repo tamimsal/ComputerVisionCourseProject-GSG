@@ -123,8 +123,12 @@ def gotoedgedetection():
 @app.route("/slider11", methods=["POST"])
 def getSliderValue():
     name_of_slider = request.form["name_of_slider"]
-    return name_of_slider
+    return render_template('edgeDetection.html', success='Files uploaded successfully')
 
+@app.route('/gettingBack', methods=['POST'])
+def gettingBacktoMain():
+    if request.method == 'POST':
+        return render_template('index.html', success='Files uploaded successfully')
 
 
 
