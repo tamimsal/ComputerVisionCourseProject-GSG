@@ -32,6 +32,12 @@ def stritchImages():
     files = sorted_directory_listing_with_os_listdir('static')
     leftImage = cv2.imread('static/' + files[0])
     count = 0
+    for file in files:
+        count+=1
+    
+    if(count == 1):
+        cv2.imwrite("static/result.jpg", leftImage)
+
     for file in files[1:]:
         rightImage = cv2.imread('static/' + file)
         status, stitched_image = stitcher.stitch((leftImage, rightImage))  
@@ -105,11 +111,17 @@ def uploadImages():
 @app.route('/button_click', methods=['POST'])
 def button_click():
     if request.method == 'POST':
-        stritchImages()
-        cannyEdgeDetection()
-        HumanDtetction()
-        differenceOfguassian(5)
-        return render_template('hub.html', success='Files uploaded successfully')
+        path = "static"
+        dir = os.listdir(path) 
+        if len(dir) == 0: 
+            print("Empty directory") 
+            return render_template('index.html', success='Files uploaded successfully')
+        else: 
+            stritchImages()
+            cannyEdgeDetection()
+            HumanDtetction()
+            differenceOfguassian(5)
+            return render_template('hub.html', success='Files uploaded successfully')
 
 
 @app.route('/stritch', methods=['POST'])
@@ -126,6 +138,14 @@ def humandetect():
 def gotoedgedetection():
     if request.method == 'POST':
         return render_template('edgeDetection.html', success='Files uploaded successfully')
+
+@app.route('/returnToHome', methods=['POST'])
+def returnToHomee():
+    if request.method == 'POST':
+        #os.rmdir('static')
+        #os.makedirs('static')
+        return render_template('index.html', success='Files uploaded successfully')
+
 
 
 
