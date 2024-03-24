@@ -58,8 +58,16 @@ def HumanDtetction():
         result.save(filename='static/resultHumanDetect.jpg')  # save to disk
 
 
+def differenceOfguassian(kernel_size):
+    orginalImage = cv2.imread("static/result.jpg")
+    grayImage = cv2.cvtColor(orginalImage, cv2.COLOR_BGR2GRAY)
+    gaussian_1 = cv2.GaussianBlur(grayImage, (0, 0), 1)
+    gaussian_3 = cv2.GaussianBlur(grayImage, (0, 0), 3)
+    DoG = gaussian_1 - gaussian_3
+    cv2.imwrite("static/DoG.jpg", DoG)
 
-
+    enhanced_dog = cv2.morphologyEx(DoG, cv2.MORPH_CLOSE, cv2.getStructuringElement(cv2.MORPH_RECT, (kernel_size, kernel_size)))
+    cv2.imwrite("static/enhancedDoG.jpg", enhanced_dog)
 
 
 def cannyEdgeDetection():
@@ -100,7 +108,8 @@ def button_click():
         stritchImages()
         cannyEdgeDetection()
         HumanDtetction()
-        return render_template('index.html', success='Files uploaded successfully')
+        differenceOfguassian(5)
+        return render_template('hub.html', success='Files uploaded successfully')
 
 
 @app.route('/stritch', methods=['POST'])
@@ -123,12 +132,17 @@ def gotoedgedetection():
 @app.route("/slider11", methods=["POST"])
 def getSliderValue():
     name_of_slider = request.form["name_of_slider"]
+    differenceOfguassian(int(name_of_slider))
     return render_template('edgeDetection.html', success='Files uploaded successfully')
+
+
+
+
 
 @app.route('/gettingBack', methods=['POST'])
 def gettingBacktoMain():
     if request.method == 'POST':
-        return render_template('index.html', success='Files uploaded successfully')
+        return render_template('hub.html', success='Files uploaded successfully')
 
 
 
@@ -140,7 +154,3 @@ def index():
 if __name__ == '__main__':
     app.run(debug=True)
 
-
-
-model = YOLO('yolov8n.pt') 
-resultImage = model('static/result.jpg', classes = 0)  
