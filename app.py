@@ -3,9 +3,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 import cv2
 import os
-import torch
-from pathlib import Path
-from PIL import Image
+from ultralytics import YOLO
+
+
 app = Flask(__name__)
 
 UPLOAD_FOLDER = 'static'
@@ -43,6 +43,21 @@ def stritchImages():
             count+=1
         else:
             print("Stitching failed!")
+
+
+
+def HumanDtetction():
+    model = YOLO('yolov8n.pt') 
+    results = model(['static/result.jpg'], classes = 0,conf = 0.5)  
+
+    for result in results:
+        boxes = result.boxes  # Boxes object for bounding box outputs
+        masks = result.masks  # Masks object for segmentation masks outputs
+        keypoints = result.keypoints  # Keypoints object for pose outputs
+        probs = result.probs  # Probs object for classification outputs
+        result.save(filename='static/resultHumanDetect.jpg')  # save to disk
+
+
 
 
 
@@ -84,6 +99,7 @@ def button_click():
     if request.method == 'POST':
         stritchImages()
         cannyEdgeDetection()
+        HumanDtetction()
         return render_template('index.html', success='Files uploaded successfully')
 
 
@@ -108,3 +124,6 @@ if __name__ == '__main__':
     app.run(debug=True)
 
 
+
+model = YOLO('yolov8n.pt') 
+resultImage = model('static/result.jpg', classes = 0)  

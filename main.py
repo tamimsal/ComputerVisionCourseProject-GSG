@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 import cv2
 import os
 
+from ultralytics import YOLO
 
 def sorted_directory_listing_with_os_listdir(directory):
     items = os.listdir(directory)
@@ -43,12 +44,16 @@ def cannyEdgeDetection():
 
 
 
-stritchImages()
-cannyEdgeDetection()
 
+model = YOLO('yolov8n.pt') 
+results = model(['static/result.jpg'], classes = 0,conf = 0.5)  
 
-
-
+for result in results:
+    boxes = result.boxes  # Boxes object for bounding box outputs
+    masks = result.masks  # Masks object for segmentation masks outputs
+    keypoints = result.keypoints  # Keypoints object for pose outputs
+    probs = result.probs  # Probs object for classification outputs
+    result.save(filename='static/resultHumanDetect.jpg')  # save to disk
 
 
 
