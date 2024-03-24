@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, send_from_directory
+from flask import Flask, render_template, request
 import numpy as np
 import matplotlib.pyplot as plt
 import cv2
@@ -108,15 +108,28 @@ def stritch():
     if request.method == 'POST':
         return render_template('stritch.html', success='Files uploaded successfully')
 
+@app.route('/human', methods=['POST'])
+def humandetect():
+    if request.method == 'POST':
+        return render_template('human.html', success='Files uploaded successfully')
+
+@app.route('/EdgeDetect', methods=['POST'])
+def gotoedgedetection():
+    if request.method == 'POST':
+        return render_template('edgeDetection.html', success='Files uploaded successfully')
 
 
+
+@app.route("/slider11", methods=["POST"])
+def getSliderValue():
+    name_of_slider = request.form["name_of_slider"]
+    return name_of_slider
 
 
 
 
 
 def index():
-    uploadImages()
     return render_template('index.html')
 
 
