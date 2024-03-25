@@ -4,11 +4,18 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Display Images</title>
-<style>
-    
-</style>
+<link rel="stylesheet" type= "text/css" href="{{ url_for('static', filename='css/stritchStyle.css') }}">
+
+
 </head>
 <body>
+
+    <div class="strtich_images">
+    {% for imageList in imageList %}
+    <img src="{{url_for('static' , filename = imageList)}}" alt="" width="300px">
+    {% endfor %}
+    </div>
+
     <img src="static/results/result.jpg" alt="" width="300px">
 
     <form action="/gettingBack" method="POST">

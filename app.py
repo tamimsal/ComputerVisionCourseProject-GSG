@@ -122,10 +122,12 @@ def button_click():
             return render_template('hub.html', success='Files uploaded successfully')
 
 
-@app.route('/stritch', methods=['POST'])
+@app.route('/stritch', methods=['POST', 'GET'])
 def stritch():
-    if request.method == 'POST':
-        return render_template('stritch.html', success='Files uploaded successfully')
+    #if request.method == 'POST':
+    imageList = os.listdir("static/uploads")
+    imageList = ['uploads/' + image for image in imageList]
+    return render_template("stritch.html", imageList = imageList)
 
 @app.route('/human', methods=['POST'])
 def humandetect():
@@ -161,9 +163,7 @@ def getSliderValue():
 def gettingBacktoMain():
     if request.method == 'POST':
         return render_template('hub.html', success='Files uploaded successfully')
-
-
-
+    
 
 def index():
     return render_template('index.html')

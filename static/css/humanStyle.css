@@ -1,0 +1,26 @@
+body {
+    background-color: #1f1f1f;
+    color: #ffffff;
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+img {
+    display: block;
+    margin: 20px auto;
+}
+
+button[type="submit"] {
+    background-color: #00ffff; /* Rick and Morty theme color */
+    color: #000000;
+    padding: 10px 20px;
+    border: none;
+    cursor: pointer;
+    margin-top: 20px;
+}
+
+button[type="submit"]:hover {
+    background-color: #ffffff;
+    color: #00ffff;
+}

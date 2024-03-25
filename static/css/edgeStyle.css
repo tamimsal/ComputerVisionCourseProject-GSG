@@ -1,0 +1,49 @@
+body {
+    background-color: #1f1f1f;
+    color: #ffffff;
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+form {
+    text-align: center;
+    margin-top: 20px;
+}
+
+input[type="range"] {
+    width: 80%;
+    margin: 20px auto;
+}
+
+input[type="submit"] {
+    background-color: #00ffff; /* Rick and Morty theme color */
+    color: #000000;
+    padding: 10px 20px;
+    border: none;
+    cursor: pointer;
+}
+
+input[type="submit"]:hover {
+    background-color: #ffffff;
+    color: #00ffff;
+}
+
+button[type="submit"] {
+    background-color: #00ffff; /* Rick and Morty theme color */
+    color: #000000;
+    padding: 10px 20px;
+    border: none;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+button[type="submit"]:hover {
+    background-color: #ffffff;
+    color: #00ffff;
+}
+
+img {
+    display: block;
+    margin: 20px auto;
+}
