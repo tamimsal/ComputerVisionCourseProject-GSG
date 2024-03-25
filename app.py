@@ -2,13 +2,13 @@ from flask import Flask, render_template, request
 import numpy as np
 import matplotlib.pyplot as plt
 import cv2
-import os
+import os, shutil
 from ultralytics import YOLO
 
 
 app = Flask(__name__)
 
-UPLOAD_FOLDER = 'static'
+UPLOAD_FOLDER = 'static/uploads'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 if not os.path.exists(UPLOAD_FOLDER):
@@ -24,28 +24,25 @@ def sorted_directory_listing_with_os_listdir(directory):
     return sorted_items
 
 
-    
-
-
 def stritchImages():
     stitcher = cv2.Stitcher_create()
-    files = sorted_directory_listing_with_os_listdir('static')
-    leftImage = cv2.imread('static/' + files[0])
+    files = sorted_directory_listing_with_os_listdir('static/uploads')
+    leftImage = cv2.imread('static/uploads/' + files[0])
     count = 0
     for file in files:
         count+=1
     
     if(count == 1):
-        cv2.imwrite("static/result.jpg", leftImage)
+        cv2.imwrite("static/results/result.jpg", leftImage)
 
     for file in files[1:]:
-        rightImage = cv2.imread('static/' + file)
+        rightImage = cv2.imread('static/uploads/' + file)
         status, stitched_image = stitcher.stitch((leftImage, rightImage))  
   
         if status == cv2.Stitcher_OK:
             print("Stitching successful!")
             leftImage = stitched_image
-            cv2.imwrite("static/result.jpg", stitched_image)
+            cv2.imwrite("static/results/result.jpg", stitched_image)
             count+=1
         else:
             print("Stitching failed!")
@@ -54,36 +51,36 @@ def stritchImages():
 
 def HumanDtetction():
     model = YOLO('yolov8n.pt') 
-    results = model(['static/result.jpg'], classes = 0,conf = 0.5)  
+    results = model(['static/results/result.jpg'], classes = 0,conf = 0.5)  
 
     for result in results:
-        boxes = result.boxes  # Boxes object for bounding box outputs
-        masks = result.masks  # Masks object for segmentation masks outputs
-        keypoints = result.keypoints  # Keypoints object for pose outputs
-        probs = result.probs  # Probs object for classification outputs
-        result.save(filename='static/resultHumanDetect.jpg')  # save to disk
+        boxes = result.boxes 
+        masks = result.masks  
+        keypoints = result.keypoints 
+        probs = result.probs  
+        result.save(filename='static/results/resultHumanDetect.jpg') 
 
 
 def differenceOfguassian(kernel_size):
-    orginalImage = cv2.imread("static/result.jpg")
+    orginalImage = cv2.imread("static/results/result.jpg")
     grayImage = cv2.cvtColor(orginalImage, cv2.COLOR_BGR2GRAY)
     gaussian_1 = cv2.GaussianBlur(grayImage, (0, 0), 1)
     gaussian_3 = cv2.GaussianBlur(grayImage, (0, 0), 3)
     DoG = gaussian_1 - gaussian_3
-    cv2.imwrite("static/DoG.jpg", DoG)
+    cv2.imwrite("static/results/DoG.jpg", DoG)
 
     enhanced_dog = cv2.morphologyEx(DoG, cv2.MORPH_CLOSE, cv2.getStructuringElement(cv2.MORPH_RECT, (kernel_size, kernel_size)))
-    cv2.imwrite("static/enhancedDoG.jpg", enhanced_dog)
+    cv2.imwrite("static/results/enhancedDoG.jpg", enhanced_dog)
 
 
 def cannyEdgeDetection():
-    orginalImage = cv2.imread("static/result.jpg")
+    orginalImage = cv2.imread("static/results/result.jpg")
     grayImage = cv2.cvtColor(orginalImage, cv2.COLOR_BGR2GRAY)
     median_value = np.median(grayImage)
     lower_threshold = int(max(0, 0.7 * median_value))
     upper_threshold = int(min(255, 1.3 * median_value))
     canny_edges = cv2.Canny(grayImage, lower_threshold, upper_threshold)
-    cv2.imwrite("static/cannyResult.jpg", canny_edges)
+    cv2.imwrite("static/results/cannyResult.jpg", canny_edges)
 
 @app.route('/', methods=['GET', 'POST'])
 def uploadImages():
@@ -111,13 +108,14 @@ def uploadImages():
 @app.route('/button_click', methods=['POST'])
 def button_click():
     if request.method == 'POST':
-        path = "static"
+        path = "static/uploads"
         dir = os.listdir(path) 
         if len(dir) == 0: 
             print("Empty directory") 
             return render_template('index.html', success='Files uploaded successfully')
         else: 
             stritchImages()
+
             cannyEdgeDetection()
             HumanDtetction()
             differenceOfguassian(5)
@@ -142,11 +140,11 @@ def gotoedgedetection():
 @app.route('/returnToHome', methods=['POST'])
 def returnToHomee():
     if request.method == 'POST':
-        #os.rmdir('static')
-        #os.makedirs('static')
+        shutil.rmtree('static/results')
+        os.makedirs('static/results')
+        shutil.rmtree('static/uploads')
+        os.makedirs('static/uploads')
         return render_template('index.html', success='Files uploaded successfully')
-
-
 
 
 @app.route("/slider11", methods=["POST"])
