@@ -1,33 +1,59 @@
+#MortyAI
+#Computer Vision Course By Gaza Sky Geeks
+#Done By: Tamim Salhab
+
+#importing needed libraries
 from flask import Flask, render_template, request
 import numpy as np
-import matplotlib.pyplot as plt
 import cv2
 import os, shutil
 from ultralytics import YOLO
 
+app = Flask(__name__)                                                                       #defining app using flask
 
-app = Flask(__name__)
 
-UPLOAD_FOLDER = 'static/uploads'
+#This section is for uploading the images
+UPLOAD_FOLDER = 'static/uploads'                                                            
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
-if not os.path.exists(UPLOAD_FOLDER):
+if not os.path.exists(UPLOAD_FOLDER):                                                       #checking if 
     os.makedirs(UPLOAD_FOLDER)
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in {'jpg', 'jpeg', 'png'}
 
+@app.route('/', methods=['GET', 'POST'])
+def UploadMultipleImagesFromLocalFolder():
+    if request.method == 'POST':
+        if 'image_uploads' not in request.files:
+            return render_template('index.html', error='No file part')
 
-def sorted_directory_listing_with_os_listdir(directory):
+    files = request.files.getlist('image_uploads')
+
+    for file in files:
+        if file.filename == '':
+            continue
+
+        if file and allowed_file(file.filename):
+            filename = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
+            file.save(filename)
+
+    return render_template('index.html', success='Files uploaded successfully')
+
+
+
+def SortingImagesByName(directory):
     items = os.listdir(directory)
     sorted_items = sorted(items)
     return sorted_items
 
 
-def stritchImages():
+def StrtichingImages():
     stitcher = cv2.Stitcher_create()
-    files = sorted_directory_listing_with_os_listdir('static/uploads')
+    files = SortingImagesByName('static/uploads')
     leftImage = cv2.imread('static/uploads/' + files[0])
+
+
     count = 0
     for file in files:
         count+=1
@@ -37,6 +63,7 @@ def stritchImages():
 
     for file in files[1:]:
         rightImage = cv2.imread('static/uploads/' + file)
+
         status, stitched_image = stitcher.stitch((leftImage, rightImage))  
   
         if status == cv2.Stitcher_OK:
@@ -49,16 +76,11 @@ def stritchImages():
 
 
 
-def HumanDtetction():
+def HumansDetectionUsingYOLO():
     model = YOLO('yolov8n.pt') 
     results = model(['static/results/result.jpg'], classes = 0,conf = 0.5)  
+    results[0].save(filename='static/results/resultHumanDetect.jpg') 
 
-    for result in results:
-        boxes = result.boxes 
-        masks = result.masks  
-        keypoints = result.keypoints 
-        probs = result.probs  
-        result.save(filename='static/results/resultHumanDetect.jpg') 
 
 
 def differenceOfguassian(kernel_size):
@@ -82,26 +104,6 @@ def cannyEdgeDetection():
     canny_edges = cv2.Canny(grayImage, lower_threshold, upper_threshold)
     cv2.imwrite("static/results/cannyResult.jpg", canny_edges)
 
-@app.route('/', methods=['GET', 'POST'])
-def uploadImages():
-    if request.method == 'POST':
-    # Check if the post request has the file part
-        if 'image_uploads' not in request.files:
-            return render_template('index.html', error='No file part')
-
-    files = request.files.getlist('image_uploads')
-
-    for file in files:
-        if file.filename == '':
-            continue
-
-        if file and allowed_file(file.filename):
-            filename = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
-            file.save(filename)
-
-    return render_template('index.html', success='Files uploaded successfully')
-    
-
 
 
 
@@ -114,10 +116,10 @@ def button_click():
             print("Empty directory") 
             return render_template('index.html', success='Files uploaded successfully')
         else: 
-            stritchImages()
+            StrtichingImages()
 
             cannyEdgeDetection()
-            HumanDtetction()
+            HumansDetectionUsingYOLO()
             differenceOfguassian(5)
             return render_template('hub.html', success='Files uploaded successfully')
 

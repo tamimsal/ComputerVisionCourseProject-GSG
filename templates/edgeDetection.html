@@ -7,6 +7,15 @@
     <link rel="stylesheet" type= "text/css" href="{{ url_for('static', filename='css/edgeStyle.css') }}">
 </head>
 <body>
+  
+    
+    <img src="static/results/cannyResult.jpg" alt="" width="800px">
+
+    <div class="twoImagesDetect">
+    <img src="static/results/DoG.jpg" alt="" width="800px">
+    <img src="static/results/enhancedDoG.jpg" alt="" width="800px">
+    </div>  
+
     <form method="POST" action="/slider11">
         <input type="range" min="1" max="10" name="name_of_slider" />
         <input type="submit" value="submit" />
@@ -15,10 +24,6 @@
     <form action="/gettingBack" method="POST">
         <button type="submit">Go back!</button>
     </form>
-    <img src="static/results/cannyResult.jpg" alt="" width="300px">
-
-    <img src="static/results/DoG.jpg" alt="" width="300px">
-    <img src="static/results/enhancedDoG.jpg" alt="" width="300px">
 
 
 </body>
